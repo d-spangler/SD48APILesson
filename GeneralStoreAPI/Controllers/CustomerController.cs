@@ -36,7 +36,7 @@ namespace GeneralStoreAPI.Controllers
         }
 
 
-        //GetById - Return
+        //GetById - RETURN
         [HttpGet]
         public async Task<IHttpActionResult> GetById([FromUri] int id)
         {
@@ -48,7 +48,7 @@ namespace GeneralStoreAPI.Controllers
             return Ok(customer);
         }
 
-        //Update
+        //UPDATE
         [HttpPut]
         public async Task<IHttpActionResult> Put([FromUri] int id, [FromBody] Customer model)
         {
@@ -65,7 +65,19 @@ namespace GeneralStoreAPI.Controllers
             return BadRequest(ModelState);
         }
 
+        //DELETE
+        [HttpDelete]
+        public async Task<IHttpActionResult> Delete([FromUri] int id)
+        {
+            Customer customer = await _context.Customers.FindAsync(id);
+            if(customer == null)
+            {
+                return NotFound();
+            }
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+            return Ok();
 
-
+        }
     }
 }
