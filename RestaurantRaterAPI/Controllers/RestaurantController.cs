@@ -13,10 +13,11 @@ namespace RestaurantRaterAPI.Controllers
     public class RestaurantController : ApiController
     {
         //We want to have access/talk to our RestaurantDbContext since that's the link to our database
+        //This is our CRUD
 
         private readonly RestaurantDbContext _context = new RestaurantDbContext(); //Now we have an instance of context
 
-        //Now, our first endpoint
+        //Now, our first endpoint, CREATE
         [HttpPost] //We have to say what kind it is. Post is a way for us to create
         public async Task<IHttpActionResult> PostRestaurant(Restaurant model)
         {
@@ -34,7 +35,8 @@ namespace RestaurantRaterAPI.Controllers
 
         }
 
-
+        
+        //GET ALL. READ
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {
@@ -43,6 +45,38 @@ namespace RestaurantRaterAPI.Controllers
 
         }
 
+       
+       [HttpGet]
+       //GET BY ID. READ
+       public async Task<IHttpActionResult> GetById(int id)
+       {
+            Restaurant restaurant = await _context.Restaurants.FindAsync(id); //We do not need to build a foreach to search our database because there is a key in Restaurant for Id
+            if(restaurant != null)
+            {
+                return Ok(restaurant);
+            }
+            return NotFound();
+       }
 
+        [HttpPut]
+
+        public async Task<IHttpActionResult> UpdateRestaurant([FromUri] int id, [FromBody] Restaurant model)//Here add attributes to specify where we want information to come from (URI/URL and Body)
+        {
+            if (ModelState.IsValid)
+            {
+                Restaurant restaurant = await _context.Restaurants.FindAsync(id);
+                if(restaurant!= null)
+                {
+                    restaurant.Name = model.Name;
+                    restaurant.Address = model.Address;
+                    restaurant.Rating = model.Rating;
+
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
+            }
+            return BadRequest(ModelState);
+        }
     }
 }
