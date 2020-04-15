@@ -78,5 +78,23 @@ namespace RestaurantRaterAPI.Controllers
             }
             return BadRequest(ModelState);
         }
+
+
+        //Delete
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteRestaurantById(int id)
+        {
+            Restaurant restaurant = await _context.Restaurants.FindAsync(id);
+            if(restaurant == null)
+            {
+                return NotFound();
+            }
+            _context.Restaurants.Remove(restaurant); //returns an integer, it means "how many rows of data have been changed," one row of data has been changed
+            if(await _context.SaveChangesAsync() == 1) //saying if 1 row has been saved/changed; this statement will come into play if more than one row is changed at a time at any point in the database
+            {
+                return Ok();
+            }
+            return InternalServerError(); //Again, if more than 1 row is altered at a time anywhere in the database
+        }
     }
 }
